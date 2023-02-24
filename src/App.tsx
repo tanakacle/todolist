@@ -1,18 +1,31 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import './App.css'
+
+type Todo = {
+  inputValue: string
+  id: number
+  checked: boolean
+}
 
 function App() {
   const [inputValue, setInputValue] = useState('')
-  const [todos, setTodos] = useState<Todo[]>([])
+  const [todos, setTodos] = useState<Todo[]>(() => {
+    const storedTodos = localStorage.getItem('todos')
+    return storedTodos ? JSON.parse(storedTodos) : []
+  })
 
-  type Todo = {
-    inputValue: string
-    id: number
-    checked: boolean
-  }
+  useEffect(() => {
+    const storedTodos = localStorage.getItem('todos')
+    if (storedTodos) {
+      setTodos(JSON.parse(storedTodos))
+    }
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem('todos', JSON.stringify(todos))
+  }, [todos])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // console.log(e.target.value)
     setInputValue(e.target.value)
   }
 
@@ -88,4 +101,5 @@ function App() {
     </div>
   )
 }
+
 export default App
